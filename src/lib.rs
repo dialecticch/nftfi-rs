@@ -5,7 +5,6 @@
 //! let client = NFTFiClient::new().expect("client");
 //! let listings = client.get_listings().await.expect("listings");
 //! ```
-
 pub mod client;
 pub mod errors;
 pub mod models;
@@ -14,7 +13,9 @@ pub mod utils;
 #[cfg(test)]
 mod tests {
     use crate::client::NFTFiClient;
+    use chrono::Utc;
     use ethereum_types::Address;
+    use futures::{pin_mut, StreamExt};
 
     #[tokio::test]
     async fn test_get_projects() {
@@ -57,5 +58,18 @@ mod tests {
         let client = NFTFiClient::new().expect("client");
         let loans = client.get_loans(&address, "1378").await.expect("loans");
         assert!(!loans.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_listing() {
+        let client = NFTFiClient::new().expect("client");
+        let stream = client.watch_listings(10).await;
+        let start_time = Utc::now();
+        pin_mut!(stream);
+        while let Some(Ok(listing)) = stream.next().await {
+            if listing.listed_date > start_time {
+                break;
+            }
+        }
     }
 }
