@@ -2,8 +2,13 @@
 //!
 //! # Examples
 //! ```
-//! let client = NFTFiClient::new().expect("client");
-//! let listings = client.get_listings().await.expect("listings");
+//! use nftfi::client::NFTFiClient;
+//!
+//! #[tokio::main]
+//! async fn main() {
+//!    let client = NFTFiClient::new().expect("client");
+//!    let listings = client.get_listings().await.expect("listings");
+//! }
 //! ```
 pub mod client;
 pub mod errors;
